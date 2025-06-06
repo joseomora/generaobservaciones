@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import urllib.request
 import json
+import os
 
 # --- Configuración de la Página ---
 # Es bueno darle un título y un ícono a tu app.
@@ -16,29 +17,25 @@ st.set_page_config(
 # --- Función para Llamar a la API ---
 # Movemos la lógica de la API a una función para mantener el código ordenado.
 # La función toma el texto del usuario como entrada.
+# Reemplaza la función completa con esta versión
 def consumir_api_azure(texto_input: str):
     """
     Envía el texto a la API de Azure ML y devuelve los resultados.
     """
-    try:
-        api_key = st.secrets["API_KEY_AZURE"]
-        url = 'https://pruebacapacitacion-0621-xsxjf.eastus2.inference.ml.azure.com/score'
-    except FileNotFoundError:
-        st.error("Archivo de secretos no encontrado. Asegúrate de crear `.streamlit/secrets.toml`.")
-        return None
-    except KeyError:
-        st.error("API_KEY_AZURE no encontrada en los secretos. Revisa tu archivo `.streamlit/secrets.toml`.")
-        return None
+    # --- CAMBIO IMPORTANTE: LEEMOS DIRECTAMENTE DEL ENTORNO CON LA LIBRERÍA 'os' ---
+    api_key = os.environ.get("API_KEY_AZURE")
+    url = 'https://pruebacapacitacion-0621-xsxjf.eastus2.inference.ml.azure.com/score'
 
+    # Verificamos si la variable de entorno fue encontrada
     if not api_key:
-        st.error("La API Key de Azure está vacía. Por favor, configúrala en los secretos de Streamlit.")
-        return None
+        st.error("La variable de entorno 'API_KEY_AZURE' no fue encontrada en la configuración de Azure.")
+        # st.stop() detiene la ejecución del script aquí para no continuar con errores.
+        st.stop()
 
-    # --- LÍNEA CORREGIDA ---
-    # Cambiamos "input_text" por "resultados", que es lo que la API espera según el error.
+    # El cuerpo (body) de la petición.
     data = {"resultados": texto_input}
-    # -----------------------
 
+    # Preparación de la petición
     body = str.encode(json.dumps(data))
     headers = {
         'Content-Type': 'application/json',
@@ -47,6 +44,7 @@ def consumir_api_azure(texto_input: str):
     }
     req = urllib.request.Request(url, body, headers)
 
+    # Bloque try-except para manejar errores de la API
     try:
         response = urllib.request.urlopen(req)
         result_bytes = response.read()
