@@ -95,22 +95,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- Función para Llamar a la API ---
-def consumir_api_azure(titulo: str, entidad: str, texto_input: str):
-    """
-    Envía el título, entidad y texto a la API de Azure y devuelve los resultados.
-    """
-    api_key = os.environ.get("API_KEY_AZURE")
-    # URL actualizada
-    url = 'https://observaciones-api.nicebay-4b1a584e.eastus2.azurecontainerapps.io'
-
-    # Verificamos si la variable de entorno fue encontrada
-    if not api_key:
-        st.error("⚠️ La variable de entorno 'API_KEY_AZURE' no fue encontrada en la configuración.")
-        st.stop()
-
-    # El cuerpo actualizado con los tres campos
-    data = {
+data = {
         "título": titulo,
         "entidad": entidad,
         "resultados": texto_input
