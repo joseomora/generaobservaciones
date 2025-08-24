@@ -102,27 +102,27 @@ data = {
     }
 
     # Preparación de la petición
-    body = str.encode(json.dumps(data))
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': ('Bearer ' + api_key),
-        'Accept': 'application/json'
-    }
-    req = urllib.request.Request(url, body, headers)
+body = str.encode(json.dumps(data))
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': ('Bearer ' + api_key),
+    'Accept': 'application/json'
+}
+req = urllib.request.Request(url, body, headers)
 
-    # Bloque try-except para manejar errores de la API
-    try:
-        response = urllib.request.urlopen(req)
-        result_bytes = response.read()
-        result_json_str = result_bytes.decode("utf8", 'ignore')
-        result_list = json.loads(result_json_str)
-        return result_list
+# Bloque try-except para manejar errores de la API
+try:
+    response = urllib.request.urlopen(req)
+    result_bytes = response.read()
+    result_json_str = result_bytes.decode("utf8", 'ignore')
+    result_list = json.loads(result_json_str)
+    return result_list
 
-    except urllib.error.HTTPError as error:
-        error_message = f"La petición a la API falló con código {error.code}."
-        error_details = error.read().decode("utf8", 'ignore')
-        st.error(f"❌ {error_message}\nDetalles: {error_details}")
-        return None
+except urllib.error.HTTPError as error:
+    error_message = f"La petición a la API falló con código {error.code}."
+    error_details = error.read().decode("utf8", 'ignore')
+    st.error(f"❌ {error_message}\nDetalles: {error_details}")
+    return None
 
 # --- Interfaz de Usuario de Streamlit ---
 
