@@ -34,34 +34,38 @@ st.markdown("""
         border-radius: 10px;
     }
     
-    .proposal-card-1 {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* NUEVO: contenedor horizontal para las tarjetas */
+    .proposal-row {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: stretch;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    /* NUEVO: clase base de tarjeta para layout horizontal */
+    .proposal-card {
+        flex: 1;
+        min-width: 280px;
+        max-width: 420px;
         padding: 20px;
         border-radius: 15px;
         color: white;
         margin-bottom: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
+    }
+    
+    .proposal-card-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
     .proposal-card-2 {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
     }
     
     .proposal-card-3 {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
     }
     
     .proposal-number {
@@ -236,44 +240,8 @@ with st.sidebar:
     - titulo
     - entidad
     """)
-    
-    # Ejemplos de payloads del script de pruebas
-    st.markdown("### 📝 Ejemplos de Prueba")
-    example_payloads = [
-        {
-            "titulo": "Irregularidades en proceso de licitación",
-            "entidad": "Municipalidad de San Fernando",
-            "resultados": "Se detectaron irregularidades en el proceso de licitación pública ID-3659-2024 para la adquisición de insumos médicos."
-        },
-        {
-            "titulo": "Falta de documentación respaldatoria",
-            "entidad": "Servicio de Salud Metropolitano",
-            "resultados": "Durante la revisión del primer semestre de 2024, se constató la ausencia de documentación respaldatoria en facturas clave."
-        },
-        {
-            "titulo": "Incumplimiento contractual",
-            "entidad": "Hospital Regional de Concepción",
-            "resultados": "Se verificó un incumplimiento sistemático de los plazos establecidos en el contrato de suministros de oficina."
-        }
-    ]
-    
-    if st.button("📋 Cargar Ejemplo 1"):
-        st.session_state.titulo_ejemplo = example_payloads[0]["titulo"]
-        st.session_state.entidad_ejemplo = example_payloads[0]["entidad"]
-        st.session_state.texto_ejemplo = example_payloads[0]["resultados"]
-        st.rerun()
-    
-    if st.button("📋 Cargar Ejemplo 2"):
-        st.session_state.titulo_ejemplo = example_payloads[1]["titulo"]
-        st.session_state.entidad_ejemplo = example_payloads[1]["entidad"]
-        st.session_state.texto_ejemplo = example_payloads[1]["resultados"]
-        st.rerun()
-    
-    if st.button("📋 Cargar Ejemplo 3"):
-        st.session_state.titulo_ejemplo = example_payloads[2]["titulo"]
-        st.session_state.entidad_ejemplo = example_payloads[2]["entidad"]
-        st.session_state.texto_ejemplo = example_payloads[2]["resultados"]
-        st.rerun()
+
+# >>> Se eliminó la sección "📝 Ejemplos de Prueba" por solicitud <<<
 
 # Descripción
 st.markdown("""
@@ -319,7 +287,7 @@ texto_usuario = st.text_area(
     label_visibility="collapsed"
 )
 
-# Limpiar los valores de ejemplo después de usarlos
+# Limpiar los valores de ejemplo después de usarlos (no afecta aunque ya no haya ejemplos)
 if 'titulo_ejemplo' in st.session_state:
     del st.session_state.titulo_ejemplo
 if 'entidad_ejemplo' in st.session_state:
@@ -380,10 +348,6 @@ if generar_button:
 
             try:
                 # Ajustamos la estructura según lo que espera el script de pruebas
-                # El script verifica: r.json('propuestas').length === 3
-                # Esto sugiere que la respuesta tiene directamente un array 'propuestas'
-                
-                # Intentamos diferentes estructuras posibles
                 propuestas = None
                 
                 # Opción 1: Array directo en 'propuestas'
@@ -400,30 +364,27 @@ if generar_button:
                     propuestas = resultados_api
                 
                 if propuestas and len(propuestas) >= 3:
-                    # Crear tres columnas para las propuestas
-                    cols = st.columns(3)
-                    
                     # Iconos y etiquetas diferentes para cada propuesta
                     icons = ["🎯", "💡", "🔍"]
                     labels = ["ENFOQUE PRINCIPAL", "ALTERNATIVA INNOVADORA", "PERSPECTIVA COMPLEMENTARIA"]
                     card_classes = ["proposal-card-1", "proposal-card-2", "proposal-card-3"]
                     
-                    for i, (col, propuesta) in enumerate(zip(cols, propuestas[:3])):
-                        with col:
-                            # Manejar si la propuesta es un string o un objeto
-                            propuesta_text = propuesta if isinstance(propuesta, str) else str(propuesta)
-                            
-                            st.markdown(f"""
-                            <div class="{card_classes[i]}">
-                                <div class="proposal-number">
-                                    <span>{icons[i]} PROPUESTA {i+1}</span>
-                                    <span class="icon-badge">{labels[i]}</span>
-                                </div>
-                                <div class="proposal-content">
-                                    {propuesta_text}
-                                </div>
+                    # Render horizontal (NUEVO)
+                    st.markdown('<div class="proposal-row">', unsafe_allow_html=True)
+                    for i, propuesta in enumerate(propuestas[:3]):
+                        propuesta_text = propuesta if isinstance(propuesta, str) else str(propuesta)
+                        st.markdown(f"""
+                        <div class="proposal-card {card_classes[i]}">
+                            <div class="proposal-number">
+                                <span>{icons[i]} PROPUESTA {i+1}</span>
+                                <span class="icon-badge">{labels[i]}</span>
                             </div>
-                            """, unsafe_allow_html=True)
+                            <div class="proposal-content">
+                                {propuesta_text}
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
                     # Sección de estadísticas
                     st.markdown("---")
