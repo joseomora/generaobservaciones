@@ -33,25 +33,30 @@ st.markdown("""
     .stTextArea > div > div > textarea {
         border-radius: 10px;
     }
-    
-    /* NUEVO: contenedor horizontal para las tarjetas */
+
+    /* FILA DE TARJETAS A ANCHO COMPLETO (Grid responsivo) */
     .proposal-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 20px;
-        justify-content: center;
+        width: 100%;
         align-items: stretch;
         margin-top: 20px;
-        flex-wrap: wrap;
     }
-    /* NUEVO: clase base de tarjeta para layout horizontal */
+    @media (max-width: 1200px){
+        .proposal-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 800px){
+        .proposal-row { grid-template-columns: 1fr; }
+    }
+
+    /* Tarjeta base: sin max-width para que ocupe el 100% de su celda */
     .proposal-card {
-        flex: 1;
-        min-width: 280px;
-        max-width: 420px;
+        width: 100%;
+        height: 100%;
         padding: 20px;
         border-radius: 15px;
         color: white;
-        margin-bottom: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
     }
@@ -75,19 +80,22 @@ st.markdown("""
         margin-bottom: 10px;
         display: flex;
         align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
     }
     
     .proposal-content {
         font-size: 16px;
         line-height: 1.6;
         text-align: justify;
+        overflow-wrap: anywhere; /* evita desbordes y asegura uso completo del ancho */
+        word-break: break-word;
     }
     
     .icon-badge {
         background: rgba(255, 255, 255, 0.2);
         padding: 5px 10px;
         border-radius: 20px;
-        margin-left: 10px;
         font-size: 12px;
     }
     
@@ -241,8 +249,6 @@ with st.sidebar:
     - entidad
     """)
 
-# >>> Se eliminó la sección "📝 Ejemplos de Prueba" por solicitud <<<
-
 # Descripción
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2rem;">
@@ -287,7 +293,7 @@ texto_usuario = st.text_area(
     label_visibility="collapsed"
 )
 
-# Limpiar los valores de ejemplo después de usarlos (no afecta aunque ya no haya ejemplos)
+# Limpiar los valores de ejemplo después de usarlos
 if 'titulo_ejemplo' in st.session_state:
     del st.session_state.titulo_ejemplo
 if 'entidad_ejemplo' in st.session_state:
@@ -354,7 +360,7 @@ if generar_button:
                 if 'propuestas' in resultados_api and isinstance(resultados_api['propuestas'], list):
                     propuestas = resultados_api['propuestas']
                 
-                # Opción 2: Estructura anidada (la original)
+                # Opción 2: Estructura anidada
                 elif 'propuestas' in resultados_api and isinstance(resultados_api['propuestas'], dict):
                     if 'propuestas' in resultados_api['propuestas']:
                         propuestas = resultados_api['propuestas']['propuestas']
@@ -364,12 +370,11 @@ if generar_button:
                     propuestas = resultados_api
                 
                 if propuestas and len(propuestas) >= 3:
-                    # Iconos y etiquetas diferentes para cada propuesta
                     icons = ["🎯", "💡", "🔍"]
-                    labels = ["ENFOQUE PRINCIPAL", "ALTERNATIVA INNOVADORA", "PERSPECTIVA COMPLEMENTARIA"]
+                    labels = ["ENFOQUE PRINCIPAL", "ALTERNATIVA 1", "ALTERNATIVA 2"]
                     card_classes = ["proposal-card-1", "proposal-card-2", "proposal-card-3"]
-                    
-                    # Render horizontal (NUEVO)
+
+                    # Render a ancho completo en una grilla 3x
                     st.markdown('<div class="proposal-row">', unsafe_allow_html=True)
                     for i, propuesta in enumerate(propuestas[:3]):
                         propuesta_text = propuesta if isinstance(propuesta, str) else str(propuesta)
