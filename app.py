@@ -62,16 +62,17 @@ st.markdown("""
     }
     
     .proposal-card-1 {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 100%);
     }
-    
+
     .proposal-card-2 {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, #9d174d 0%, #7f1d1d 100%);
     }
-    
+
     .proposal-card-3 {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #0f766e 0%, #083344 100%);
     }
+
     
     .proposal-number {
         font-size: 14px;
