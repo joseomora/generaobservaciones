@@ -9,7 +9,7 @@ import time
 
 # --- Configuración de la Página ---
 st.set_page_config(
-    page_title="Generador de Observaciones con IA",
+    page_title="Asistente Redactor de Observaciones con IA",
     page_icon="🎯",
     layout="wide"
 )
@@ -220,8 +220,8 @@ def consumir_api_azure(titulo: str, entidad: str, texto_input: str):
 # Header principal con gradiente
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin: 0; font-size: 2.5rem;">🎯 Generador de Observaciones con IA</h1>
-    <p style="margin-top: 10px; opacity: 0.95;">Potenciado por Inteligencia Artificial para generar observaciones precisas y relevantes</p>
+    <h1 style="margin: 0; font-size: 2.5rem;">🎯 Aistente Redactor de Observaciones con IA</h1>
+    <p style="margin-top: 10px; opacity: 0.95;">Potenciado por Inteligencia Artificial para redactar observaciones precisas y relevantes</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -254,7 +254,7 @@ with st.sidebar:
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2rem;">
     <p style="font-size: 1.1rem; color: #666;">
-        Complete los campos a continuación para generar tres propuestas de observaciones personalizadas.
+        Complete los campos a continuación para que el asistente redacte tres propuestas de observaciones personalizadas.
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -288,7 +288,7 @@ st.markdown("### 📄 **Texto para Analizar (Resultados)**")
 texto_usuario = st.text_area(
     "",
     value=st.session_state.get('texto_ejemplo', ''),
-    placeholder="Escriba o pegue aquí el texto que desea analizar para generar las observaciones...",
+    placeholder="Escriba o pegue aquí el texto que desea usar para que el asistente redacte las observaciones...",
     height=200,
     key="texto_input",
     label_visibility="collapsed"
@@ -308,7 +308,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     generar_button = st.button(
-        "🚀 Generar Observaciones",
+        "🚀 Redactar Observaciones",
         type="primary",
         use_container_width=True
     )
@@ -331,14 +331,14 @@ if generar_button:
             }
             st.json(payload_preview)
         
-        with st.spinner('🔄 Conectando con la IA y generando observaciones... Este proceso puede tomar hasta 90 segundos.'):
+        with st.spinner('🔄 Conectando con la IA y redactando observaciones... Este proceso puede tomar hasta 90 segundos.'):
             resultados_api = consumir_api_azure(titulo_usuario, entidad_usuario, texto_usuario)
 
         if resultados_api:
             st.markdown("---")
             st.markdown("""
             <h2 style="text-align: center; color: #333; margin-bottom: 30px;">
-                ✨ Observaciones Generadas
+                ✨ Observaciones Redactadas
             </h2>
             """, unsafe_allow_html=True)
             
