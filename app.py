@@ -220,7 +220,7 @@ def consumir_api_azure(titulo: str, entidad: str, texto_input: str):
 # Header principal con gradiente
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin: 0; font-size: 2.5rem;">🎯 Aistente Redactor de Observaciones con IA</h1>
+    <h1 style="margin: 0; font-size: 2.5rem;">🎯 Asistente Redactor de Observaciones con IA</h1>
     <p style="margin-top: 10px; opacity: 0.95;">Potenciado por Inteligencia Artificial para redactar observaciones precisas y relevantes</p>
 </div>
 """, unsafe_allow_html=True)
