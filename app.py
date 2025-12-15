@@ -142,9 +142,9 @@ def verificar_health_check():
         return False, str(e)
 
 # --- Función para Llamar a la API ---
-def consumir_api_azure(titulo: str, entidad: str, texto_input: str):
+def consumir_api_azure(titulo: str, entidad: str, texto_input: str, categoria: str):
     """
-    Envía el título, entidad y texto a la API de Azure y devuelve los resultados.
+    Envía el título, entidad, texto y categoría a la API de Azure y devuelve los resultados.
     """
     api_key = os.environ.get("API_KEY_AZURE")
     
@@ -160,11 +160,12 @@ def consumir_api_azure(titulo: str, entidad: str, texto_input: str):
         return None
 
     # El cuerpo debe coincidir con el formato del script de pruebas
-    # El script usa: resultados, titulo, entidad
+    # Se agrega el campo categoria al payload
     data = {
         "resultados": texto_input,  # Cambiado el orden para coincidir con el script
         "titulo": titulo,            # título sin tilde para evitar problemas de encoding
-        "entidad": entidad
+        "entidad": entidad,
+        "categoria": categoria       # Nuevo campo agregado
     }
 
     # Preparación de la petición
@@ -248,6 +249,7 @@ with st.sidebar:
     - resultados (texto)
     - titulo
     - entidad
+    - categoria
     """)
 
 # Descripción
@@ -262,7 +264,8 @@ st.markdown("""
 # Sección de inputs con mejor diseño
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
+# Cambio: Ahora usamos 3 columnas para incluir la categoría
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("### 📝 **Título**")
@@ -281,6 +284,21 @@ with col2:
         value=st.session_state.get('entidad_ejemplo', ''),
         placeholder="Ingrese el nombre de la entidad u organización",
         key="entidad_input",
+        label_visibility="collapsed"
+    )
+
+with col3:
+    st.markdown("### 📂 **Categoría**")
+    opciones_categoria = [
+        "Examen Materia Auditada",
+        "Control Interno",
+        "Examen De Cuentas"
+    ]
+    categoria_usuario = st.selectbox(
+        "",
+        options=opciones_categoria,
+        index=0,
+        key="categoria_input",
         label_visibility="collapsed"
     )
 
@@ -322,17 +340,19 @@ if generar_button:
     elif not texto_usuario:
         st.warning("⚠️ Por favor, ingrese el texto a analizar.")
     else:
-        # Mostrar el payload que se enviará
+        # Mostrar el payload que se enviará (incluyendo la categoría)
         with st.expander("🔍 Ver payload a enviar", expanded=False):
             payload_preview = {
                 "resultados": texto_usuario,
                 "titulo": titulo_usuario,
-                "entidad": entidad_usuario
+                "entidad": entidad_usuario,
+                "categoria": categoria_usuario
             }
             st.json(payload_preview)
         
         with st.spinner('🔄 Conectando con la IA y redactando observaciones... Este proceso puede tomar hasta 90 segundos.'):
-            resultados_api = consumir_api_azure(titulo_usuario, entidad_usuario, texto_usuario)
+            # Se pasa la categoría a la función de consumo de API
+            resultados_api = consumir_api_azure(titulo_usuario, entidad_usuario, texto_usuario, categoria_usuario)
 
         if resultados_api:
             st.markdown("---")
@@ -347,11 +367,13 @@ if generar_button:
                 st.success(f"⏱️ Tiempo de respuesta: {resultados_api['_response_time']:.2f} segundos")
             
             # Mostrar información de contexto
-            context_col1, context_col2 = st.columns(2)
+            context_col1, context_col2, context_col3 = st.columns(3)
             with context_col1:
                 st.info(f"**📝 Título:** {titulo_usuario}")
             with context_col2:
                 st.info(f"**🏢 Entidad:** {entidad_usuario}")
+            with context_col3:
+                st.info(f"**📂 Categoría:** {categoria_usuario}")
 
             try:
                 # Ajustamos la estructura según lo que espera el script de pruebas
