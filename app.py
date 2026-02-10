@@ -172,7 +172,7 @@ def consumir_api_azure(titulo: str, entidad: str, texto_input: str, categoria: s
     body = str.encode(json.dumps(data))
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': ('Bearer ' + api_key),
+        'token': api_key,
         'Accept': 'application/json'
     }
     req = urllib.request.Request(url, body, headers)
